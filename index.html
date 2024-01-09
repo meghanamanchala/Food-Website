@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header_section">
+    <h1> <img id="logo" src="images.jpg" alt="">Home Food</h1>
+    <p>
+      Welcome to "Home Food", where food gets excitingly random! Imagine a magical button that creates surprise recipes
+      for you to try. It's like a fun game where you discover new and delicious dishes you might never have thought of.
+      Get ready to explore and taste all sorts of yummy and unexpected meals with just a click!
+    </p>
+    <div class="search">
+      <input type="text" id="searchBar" placeholder="Search for a meal...." />
+      <button id="searchButton">Search</button>
+    </div>
+  </div>
+  <hr>
+  <div class="ing">
+    <button id="openModalBtn">Open Ingredients</button>
+  </div>
+
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="randomContent">
+
+
+        
+      </div>
+    </div>
+  </div>
+  <div id="random_meal">
+
+  </div>
+
+  <div id="list_of_searched_meal">
+
+
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const modal = document.getElementById('myModal');
+
+      const openModalBtn = document.getElementById('openModalBtn');
+
+      const closeBtn = document.getElementsByClassName('close')[0];
+
+      openModalBtn.onclick = function () {
+        randomiseFood();
+        modal.style.display = 'block';
+      }
+
+      closeBtn.onclick = function () {
+        modal.style.display = 'none';
+      }
+
+      function randomiseFood() {
+        fetch(`https://www.themealdb.com/api/json/v1/1/random.php`)
+          .then((res) => res.json())
+          .then((data) => {
+            dispalyRandom(data);
+            openPopUp(data);
+          });
+      }
+
+      function dispalyRandom(input) {
+        const randomContent = document.getElementById('randomContent');
+        randomContent.innerHTML = `
+              <h3>Random Food Items</h3>
+              <img class="imageOfRandomFood" id="randomImage" src="${input.meals[0].strMealThumb}" />
+              <p>${input.meals[0].strMeal}</p>
+            `;
+      }
+
+      function openPopUp(ingredients) {
+        const randomContent = document.getElementById('randomContent');
+        randomContent.innerHTML += `
+              <h2>Ingredients:</h2>
+              <ul>
+                ${getIngredientsList(ingredients)}
+              </ul>
+            `;
+      }
+
+      function getIngredientsList(meal) {
+        let ingredientsList = '';
+        for (let i = 1; i <= 20; i++) {
+          const ingredient = meal.meals[0][`strIngredient${i}`];
+          const measure = meal.meals[0][`strMeasure${i}`];
+
+          if (ingredient && measure) {
+            ingredientsList += `<li>${ingredient} - ${measure}</li>`;
+          } else {
+            break;
+          }
+        }
+        return ingredientsList;
+      }
+    });
+  </script>
+
+</body>
+
+
+
+
+</html>
